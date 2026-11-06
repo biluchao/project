@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 从币安官方数据仓库下载 2024 年 BTCUSDT 3 分钟 K 线，
-合并、清洗并保存为 BTCUSDT_3m_2024.csv。
+合并、清洗并保存为 data/BTCUSDT_3m_2024.csv。
 
 数据源: https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/3m/
 
@@ -11,7 +11,7 @@
     python fetch_btc_3m_2024.py
 
 输出:
-    BTCUSDT_3m_2024.csv
+    data/BTCUSDT_3m_2024.csv
 
 可选:
     - 原始 ZIP 会缓存到 ./cache/，重复运行不会重复下载
@@ -34,7 +34,11 @@ SYMBOL = "BTCUSDT"
 INTERVAL = "3m"                 # 3 分钟 K 线
 YEAR = 2024
 BASE_URL = "https://data.binance.vision/data/spot/monthly/klines"
-OUTPUT_CSV = Path(f"{SYMBOL}_{INTERVAL}_{YEAR}.csv")
+
+# 输出目录与文件（相对项目根目录）
+OUTPUT_DIR = Path("data")
+OUTPUT_CSV = OUTPUT_DIR / f"{SYMBOL}_{INTERVAL}_{YEAR}.csv"
+
 CACHE_DIR = Path("cache")
 USE_CACHE = True                # 是否缓存原始 ZIP
 
@@ -171,6 +175,9 @@ def main() -> None:
     print("\n==> 合并清洗")
     df = pd.concat(all_dfs, ignore_index=True)
     df = clean(df)
+
+    # 确保输出目录存在
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print(f"==> 保存到 {OUTPUT_CSV}")
     df.to_csv(OUTPUT_CSV, index=False, encoding="utf-8-sig")
